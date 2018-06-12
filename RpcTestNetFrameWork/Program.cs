@@ -3,9 +3,10 @@ using NewLife.Data;
 using NewLife.Log;
 using NewLife.Net;
 using NewLife.Net.Handlers;
+using NewLife.Remoting;
 using NewLife.Threading;
 
-namespace HandlerTest
+namespace RpcTest
 {
     class Program
     {
@@ -33,69 +34,76 @@ namespace HandlerTest
         }
 
         static TimerX _timer;
-        static NetServer _server;
+        static ApiServer _server;
         static void TestServer()
         {
-            // 实例化服务端，指定端口，同时在Tcp/Udp/IPv4/IPv6上监听
-            var svr = new NetServer
-            {
-                Port = 1234,
-                Log = XTrace.Log
-            };
-            //svr.Add(new LengthFieldCodec { Size = 4 });
-            svr.Add<StandardCodec>();
-            svr.Add<EchoHandler>();
+            // 实例化RPC服务端，指定端口，同时在Tcp/Udp/IPv4/IPv6上监听
+            var svr = new ApiServer(1234);
+            // 注册服务控制器
+            svr.Register<MyController>();
+            svr.Register<UserController>();
+
+            // 指定编码器
+            svr.Encoder = new JsonEncoder();
+            svr.EncoderLog = XTrace.Log;
 
             // 打开原始数据日志
-            var ns = svr.Server;
+            var ns = svr.Server as NetServer;
+            ns.Log = XTrace.Log;
             ns.LogSend = true;
             ns.LogReceive = true;
 
+            svr.Log = XTrace.Log;
             svr.Start();
 
             _server = svr;
 
             // 定时显示性能数据
-            _timer = new TimerX(ShowStat, svr, 100, 1000);
+            _timer = new TimerX(ShowStat, ns, 100, 1000);
         }
 
-        static void TestClient()
+        static async void TestClient()
         {
-            var uri = new NetUri("tcp://127.0.0.1:1234");
-            //var uri = new NetUri("tcp://net.newlifex.com:1234");
-            var client = uri.CreateRemote();
-            client.Log = XTrace.Log;
-            client.Received += (s, e) =>
-            {
-                var pk = e.Message as Packet;
-                XTrace.WriteLine("收到：{0}", pk.ToStr());
-            };
-            //client.Add(new LengthFieldCodec { Size = 4 });
-            client.Add<StandardCodec>();
+            var client = new MyClient("tcp://127.0.0.1:1234");
+
+            // 指定编码器
+            client.Encoder = new JsonEncoder();
+            client.EncoderLog = XTrace.Log;
 
             // 打开原始数据日志
-            var ns = client;
+            var ns = client.Client;
+            ns.Log = XTrace.Log;
             ns.LogSend = true;
             ns.LogReceive = true;
 
+            client.Log = XTrace.Log;
             client.Open();
 
             // 定时显示性能数据
-            _timer = new TimerX(ShowStat, client, 100, 1000);
+            _timer = new TimerX(ShowStat, ns, 100, 1000);
 
-            // 循环发送数据
-            for (var i = 0; i < 5; i++)
+            // 标准服务，Json
+            var n = await client.AddAsync(1245, 3456);
+            XTrace.WriteLine("Add: {0}", n);
+
+            // 高速服务，二进制
+            var buf = "Hello".GetBytes();
+            var pk = await client.RC4Async(buf);
+            XTrace.WriteLine("RC4: {0}", pk.ToHex());
+
+            // 返回对象
+            var user = await client.FindUserAsync(123, true);
+            XTrace.WriteLine("FindUser: ID={0} Name={1} Enable={2} CreateTime={3}", user.ID, user.Name, user.Enable, user.CreateTime);
+
+            // 拦截异常
+            try
             {
-                var str = "你好" + (i + 1);
-                var pk = new Packet(str.GetBytes());
-                client.SendMessageAsync(pk);
+                user = await client.FindUserAsync(123, true);
             }
-        }
-
-        class User
-        {
-            public Int32 ID { get; set; }
-            public String Name { get; set; }
+            catch (ApiException ex)
+            {
+                XTrace.WriteLine("FindUser出错，错误码={0}，内容={1}", ex.Code, ex.Message);
+            }
         }
 
         static void ShowStat(Object state)

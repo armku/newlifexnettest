@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2B0F788D-9BC7-4AF6-99C6-85C9344FF6EC}</ProjectGuid>
+    <ProjectGuid>{542F38E8-6AB5-4A86-888B-4C92A951BB1C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>HandlerTest</RootNamespace>
     <AssemblyName>HandlerTest</AssemblyName>
@@ -47,9 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EchoHandler.cs" />
+    <Compile Include="MyClient.cs" />
+    <Compile Include="MyController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="UserController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
