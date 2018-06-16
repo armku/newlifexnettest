@@ -30,8 +30,8 @@ namespace HandlerTest
         
         static void TestClient()
         {
-            //var uri = new NetUri("tcp://127.0.0.1:1234");
-            var uri = new NetUri("tcp://www.armku.com:1234");
+            var uri = new NetUri("tcp://127.0.0.1:1234");
+            //var uri = new NetUri("tcp://www.armku.com:1234");
             var client = uri.CreateRemote();
             client.Log = XTrace.Log;
             client.Received += (s, e) =>
@@ -53,7 +53,7 @@ namespace HandlerTest
             _timer = new TimerX(ShowStat, client, 100, 1000);
 
             // 循环发送数据
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 1; i++)
             {
                 var str = "你好" + (i + 1);
                 var pk = new Packet(str.GetBytes());
