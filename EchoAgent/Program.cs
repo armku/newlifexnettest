@@ -7,6 +7,8 @@ using NewLife;
 using NewLife.Agent;
 using NewLife.Log;
 using NewLife.Net;
+using NewLife.Net.Handlers;
+using HandlerTest;
 
 namespace EchoAgent
 {
@@ -44,6 +46,8 @@ namespace EchoAgent
                 Port = 1234,
                 Log = XTrace.Log
             };
+            svr.Add<StandardCodec>();
+            svr.Add<EchoHandler>();
             svr.Start();
 
             _Server = svr;

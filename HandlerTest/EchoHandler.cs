@@ -4,7 +4,7 @@ using NewLife.Net.Handlers;
 
 namespace HandlerTest
 {
-    class EchoHandler : Handler
+  public  class EchoHandler : Handler
     {
         public override Object Read(IHandlerContext context, Object message)
         {
