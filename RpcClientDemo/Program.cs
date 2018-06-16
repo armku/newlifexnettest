@@ -15,13 +15,7 @@ namespace RpcTest
             XTrace.UseConsole();
 
             try
-            {
-                Console.Write("请选择运行模式：1，服务端；2，客户端  ");
-                var ch = Console.ReadKey().KeyChar;
-                Console.WriteLine();
-                if (ch == '1')
-                    TestServer();
-                else
+            {                
                     TestClient();
             }
             catch (Exception ex)
@@ -35,33 +29,7 @@ namespace RpcTest
 
         static TimerX _timer;
         static ApiServer _server;
-        static void TestServer()
-        {
-            // 实例化RPC服务端，指定端口，同时在Tcp/Udp/IPv4/IPv6上监听
-            var svr = new ApiServer(1234);
-            // 注册服务控制器
-            svr.Register<MyController>();
-            svr.Register<UserController>();
-
-            // 指定编码器
-            svr.Encoder = new JsonEncoder();
-            svr.EncoderLog = XTrace.Log;
-
-            // 打开原始数据日志
-            var ns = svr.Server as NetServer;
-            ns.Log = XTrace.Log;
-            ns.LogSend = true;
-            ns.LogReceive = true;
-
-            svr.Log = XTrace.Log;
-            svr.Start();
-
-            _server = svr;
-
-            // 定时显示性能数据
-            _timer = new TimerX(ShowStat, ns, 100, 1000);
-        }
-
+        
         static async void TestClient()
         {
             var client = new MyClient("tcp://127.0.0.1:1234");
