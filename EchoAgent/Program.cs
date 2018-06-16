@@ -46,7 +46,7 @@ namespace EchoAgent
                 Port = 1234,
                 Log = XTrace.Log
             };
-            svr.Add<StandardCodec>();
+            svr.Add<StandardCodecDemo>();
             svr.Add<EchoHandler>();
             svr.Start();
 

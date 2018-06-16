@@ -40,7 +40,7 @@ namespace HandlerTest
                 XTrace.WriteLine("收到：{0}", pk.ToStr());
             };
             //client.Add(new LengthFieldCodec { Size = 4 });
-            client.Add<StandardCodec>();
+            client.Add<StandardCodecDemo>();
 
             // 打开原始数据日志
             var ns = client;
