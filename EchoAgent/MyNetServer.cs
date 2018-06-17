@@ -18,7 +18,7 @@ namespace EchoAgent
 
             // 欢迎语
             var str = String.Format("Welcome to visit {1}!  [{0}]\r\n", Remote, Environment.MachineName);
-            Send(str);
+            //Send(str);
         }
 
         /// <summary>收到客户端数据</summary>
@@ -28,7 +28,7 @@ namespace EchoAgent
             //WriteLog("收到：{0}", e.Packet.ToStr());
 
             // 把收到的数据发回去
-            Send(e.Packet);
+            //Send(e.Packet); 已经发回
         }
     }
 }
