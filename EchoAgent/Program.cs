@@ -88,7 +88,7 @@ namespace EchoAgent
 
             _last = msg;
 
-            WriteLog(msg);
+            //WriteLog(msg);
         }
 
         /// <summary>向所有客户端发送时间</summary>
@@ -97,7 +97,7 @@ namespace EchoAgent
         {
             var str = DateTime.Now.ToFullString() + Environment.NewLine;
             var buf = str.GetBytes();
-            ns.SendAllAsync(buf);
+           // ns.SendAllAsync(buf);
         }
     }
 }
